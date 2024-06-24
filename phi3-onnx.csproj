@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>phi3_onnx</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.18.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI" Version="0.3.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.Cuda" Version="0.3.0" />
+  </ItemGroup>
+
+<!-- This approach doesn't work, it wants PE images.
+<ItemGroup>
+    <Reference Include="libonnxruntime-genai.so">
+        <HintPath>onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime-genai.so</HintPath>
+    </Reference>
+    <Reference Include="libonnxruntime_providers_cuda.so">
+        <HintPath>onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime_providers_cuda.so</HintPath>
+    </Reference>
+    <Reference Include="libonnxruntime_providers_shared.so">
+        <HintPath>onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime_providers_shared.so</HintPath>
+    </Reference>
+    <Reference Include="libonnxruntime.so">
+        <HintPath>onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime.so</HintPath>
+    </Reference>
+</ItemGroup> -->
+
+<!--   This also does not work for some reason.
+  <ItemGroup>
+    <Content Include="onnxruntime-genai-0.3.0-linux-x64-cuda/lib/*.so*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PerserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup> -->
+
+  <Target Name="CopyRuntime" AfterTargets="AfterBuild">
+    <Copy SourceFiles="onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime-genai.so" DestinationFolder="$(OutDir)/runtimes/linux-x64/native" />
+    <Copy SourceFiles="onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime_providers_cuda.so" DestinationFolder="$(OutDir)/runtimes/linux-x64/native" />
+    <Copy SourceFiles="onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime_providers_shared.so" DestinationFolder="$(OutDir)/runtimes/linux-x64/native" />
+    <Copy SourceFiles="onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime.so" DestinationFolder="$(OutDir)/runtimes/linux-x64/native" />
+    <Copy SourceFiles="onnxruntime-genai-0.3.0-linux-x64-cuda/lib/libonnxruntime.so.1.18.0" DestinationFolder="$(OutDir)/runtimes/linux-x64/native" />
+  </Target>
+
+</Project>

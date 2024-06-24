@@ -46,11 +46,6 @@ var modelsub = Path.Join(modeltop, "cuda-fp16"); // or cuda-int4-rtn-block-32
 
 
 
-var img = Images.Load("cat.jpg");
-
-var sysPrompt = "";
-var userPrompt = "What is in the image?";
-var fullPrompt = $"<|system|>{sysPrompt}<|end|><|user|><|image_1|>{userPrompt}<|end|><|assistant|>";
 
 
 
@@ -60,7 +55,10 @@ var model = new Model(modelsub);
 var processor = new MultiModalProcessor(model);
 var tok = processor.CreateStream();
 
-void RunOne() {
+void RunOne(string sysPrompt, string userPrompt, string imgFilename) {
+    
+    var img = Images.Load(imgFilename);
+    var fullPrompt = $"<|system|>{sysPrompt}<|end|><|user|><|image_1|>{userPrompt}<|end|><|assistant|>";
     var inputData = processor.ProcessImages(fullPrompt, img);
 
     var genParams = new GeneratorParams(model);
@@ -82,5 +80,13 @@ void RunOne() {
     Console.WriteLine($"\nDone generating. Took {sw.Elapsed}.");
 }
 
-RunOne();
-RunOne();
+RunOne("", "What is in the image?", "cat.jpg");
+RunOne("", "What is in the image?", "cat.jpg");
+foreach (var img in Directory.GetFiles(".", "bad-tv-*")) {
+    Console.WriteLine($"Inspecting image <{img}>...");
+    try {
+        RunOne("", "What kind of TV is shown? Is it broken?",img);
+    } catch (Exception e) {
+        Console.WriteLine($"Could not process image <{img}>:" + e.Message);
+    }
+}
